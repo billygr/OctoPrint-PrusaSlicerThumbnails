@@ -25,6 +25,12 @@ except ImportError:
 	from urllib.parse import quote, unquote
 
 
+try:
+    from octoprint.plugins.serial_connector import serial_comm as _comm
+except ImportError:
+    from octoprint.util import comm as _comm
+
+
 class PrusaslicerthumbnailsPlugin(octoprint.plugin.SettingsPlugin,
 								  octoprint.plugin.AssetPlugin,
 								  octoprint.plugin.TemplatePlugin,
@@ -86,8 +92,8 @@ class PrusaslicerthumbnailsPlugin(octoprint.plugin.SettingsPlugin,
 		with open(gcode_filename, "r", encoding="utf8", errors="ignore") as gcode_file:
 			for line in gcode_file:
 				lineNum += 1
-				gcode = octoprint.util.comm.gcode_command_for_cmd(line)
-				extrusion_match = octoprint.util.comm.regexes_parameters["floatE"].search(line)
+				gcode = _comm.gcode_command_for_cmd(line)
+				extrusion_match = _comm.regexes_parameters["floatE"].search(line)
 				if gcode == "G1" and extrusion_match:
 					self._logger.debug("Line %d: Detected first extrusion. Read complete.", lineNum)
 					break
